@@ -6,7 +6,7 @@ describe DeadCell do
   it { should_not be_alive }
 
   describe "#next_generation", :live_neighbors do
-    subject { DeadCell.new(:location => location, :board => board) }
+    subject { DeadCell.new(:location => location, :cell_map => board.cells) }
 
     context "three live neighbors" do
       before { live_neighbors(3) }
@@ -26,7 +26,7 @@ describe LiveCell do
   it { should be_alive }
 
   describe "#next_generation", :live_neighbors do
-    subject { LiveCell.new(:location => location, :board => board) }
+    subject { LiveCell.new(:location => location, :cell_map => board.cells) }
 
     context "four live neighbors" do
       before { live_neighbors(4) }

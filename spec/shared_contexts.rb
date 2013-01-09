@@ -4,7 +4,7 @@ shared_context "board, coords and live neighbor factory", :live_neighbors do
 
   def live_neighbors(num)
     location
-      .neighbors
+      .adjacent_locations
       .take(num)
       .each { |coords| board.live!(coords) }
   end
