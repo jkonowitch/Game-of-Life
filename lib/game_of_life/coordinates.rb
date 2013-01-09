@@ -10,14 +10,18 @@ class Coords
     "#{x},#{y}".to_sym
   end
 
-  def ==(other_coords)
+  def hash
+    to_sym.hash
+  end
+
+  def eql?(other_coords)
     to_sym == other_coords.to_sym
   end
 
   def adjacent_locations
     Math.cartesian(range(x), range(y)).reduce([]) do |res, (x2, y2)|
       location = Coords.new(:x => x2, :y => y2)
-      res << location unless location == self
+      res << location unless location.eql? self
       next res
     end
   end

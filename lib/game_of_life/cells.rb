@@ -16,6 +16,14 @@ class Cell
     @neighbors ||= location.adjacent_locations.map { |location| cell_map[location] }
   end
 
+  def hash
+    location.hash
+  end
+
+  def eql?(other)
+    location.eql? other.location
+  end
+
   protected
 
   def live_neighbor_count
@@ -51,13 +59,13 @@ class CellMap
   include Enumerable
 
   attr_reader :cells
-  alias :live_cells :cells
 
   def initialize
     @cells = {}
   end
 
   def []=(location, cell)
+    raise "Only persists cells that are alive" unless cell.alive?
     cells[location.to_sym] = cell
   end
 
@@ -65,14 +73,21 @@ class CellMap
     cells[location.to_sym] || DeadCell.new(:location => location, :cell_map => self)
   end
 
+  def live_cells
+    cells.values
+  end
+
   # Iterates through the set of all live cells along with
   # their neighbors; dead cells adjacent to live cells
   # can be revived, and thus must be passed to any
   # interested callers.
   def each
-    (live_cells.values + live_cells.map { |_, cell| cell.neighbors })
-      .flatten
-      .uniq
+    live_cells
+      .inject(Set.new) do |set, cell|
+        set << cell
+        cell.neighbors.inject(set, &:<<)
+        next set
+      end
       .each { |c| yield c }
   end
 end
